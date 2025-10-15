@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
         ContextCompat.registerReceiver(this, mUsbReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
         //Check USB
-        UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+        UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice.class);
         if (device!=null) {
             System.out.println("From Intent!");
             asyncRefreshAdbConnection(device);
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         System.out.println("From onNewIntent");
-        asyncRefreshAdbConnection((UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
+        asyncRefreshAdbConnection(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice.class));
     }
 
     public void asyncRefreshAdbConnection(final UsbDevice device) {
@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
             String action = intent.getAction();
             Log.d(Const.TAG, "mUsbReceiver onReceive => "+action);
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice.class);
                 String deviceName = device.getDeviceName();
                 if (mDevice != null && mDevice.getDeviceName().equals(deviceName)) {
                     try {
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
                 }
             }else if (Message.USB_PERMISSION.equals(action)){
                 System.out.println("From receiver!");
-                UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice.class);
                 handler.sendEmptyMessage(CONNECTING);
                 if (mManager.hasPermission(usbDevice))
                     asyncRefreshAdbConnection(usbDevice);
